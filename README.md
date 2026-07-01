@@ -1,5 +1,6 @@
 # AsteriaCLI
 
+> **One workspace for all your AI conversations and prompt workflows.**
 > **Your single command-line interface for managing all AI-related workflows.**
 
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)

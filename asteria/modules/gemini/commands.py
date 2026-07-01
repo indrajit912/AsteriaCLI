@@ -396,6 +396,47 @@ def prompt_run(
 
 
 
+@output_app.command("list")
+def output_list(
+    prompt: Optional[str] = typer.Option(
+        None, "--prompt", "-p", help="Filter by prompt UUID or filename"
+    ),
+) -> None:
+    """[cyan]List[/cyan] all outputs."""
+    try:
+        prompt_id = None
+        if prompt:
+            prompt_obj = PromptService.resolve_prompt(prompt)
+            prompt_id = prompt_obj.id
+
+        outputs = OutputService.list_outputs(prompt_id=prompt_id)
+        if not outputs:
+            print_no_results("outputs")
+            return
+
+        table = make_table(title="Gemini Outputs", show_lines=True)
+        table.add_column("#", style="dim", width=4)
+        table.add_column("Short ID", style="id", width=10)
+        table.add_column("Project", style="dim cyan", min_width=15, overflow="fold")
+        table.add_column("Prompt", style="title", min_width=20, overflow="fold")
+        table.add_column("Created", style="timestamp", width=12)
+
+        for idx, out in enumerate(outputs, 1):
+            prompt_name = out.prompt.filename if out.prompt else "—"
+            project_name = out.prompt.project.name if (out.prompt and out.prompt.project) else "—"
+            table.add_row(
+                str(idx),
+                short_id(out.id),
+                project_name,
+                prompt_name,
+                format_datetime(out.created_at, "%Y-%m-%d"),
+            )
+        console.print(table)
+    except (RecordNotFoundError, GeminiError) as exc:
+        print_error(str(exc))
+        raise typer.Exit(1)
+
+
 @output_app.command("edit")
 def output_edit(
     identifier: str = typer.Argument(..., help="Output UUID or filename"),
