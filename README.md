@@ -1,6 +1,6 @@
 # AsteriaCLI
 
-> **One workspace for all your AI conversations and prompt workflows.**
+> **One platform for all your AI conversations and prompt workflows.**
 > **Your single command-line interface for managing all AI-related workflows.**
 
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -37,7 +37,7 @@ code.
 | Feature | Description |
 |---------|-------------|
 | 🤖 **Agy Module** | Manage Gemini Antigravity CLI conversations with rich tables, tagging, fuzzy search, and JSON/CSV export |
-| 🔮 **Gemini Module** | Full workspace → project → prompt → output lifecycle with Gemini API integration |
+| 🔮 **Gemini Module** | Full project → prompt → output lifecycle with Gemini API integration |
 | 🗄️ **SQLite + SQLAlchemy** | Robust relational database with UUID primary keys and timestamps |
 | 🎨 **Rich UI** | Beautiful panels, tables, progress bars, syntax highlighting, spinners |
 | 🔌 **Plugin Architecture** | Add Claude, OpenAI, Ollama, DeepSeek with zero changes to existing code |
@@ -105,16 +105,13 @@ asteria agy list
 # 5. Search conversations
 asteria agy search "python"
 
-# 6. Register a Gemini workspace
-asteria gemini workspace add --path ~/projects/ai-workspace --name "AI Workspace"
+# 6. Create a project
+asteria gemini project create my-paper
 
-# 7. Create a project
-asteria gemini project create my-paper --workspace "AI Workspace"
-
-# 8. Create and edit a prompt
+# 7. Create and edit a prompt
 asteria gemini prompt new introduction.txt --project my-paper
 
-# 9. Run the prompt
+# 8. Run the prompt
 asteria gemini prompt run introduction.txt
 ```
 
@@ -138,9 +135,6 @@ asteria config set general.default_editor code
 
 # Set Gemini API key (prompts interactively and confirms)
 asteria config set gemini.api_key
-
-# Set default workspace
-asteria config set gemini.default_workspace /path/to/workspace
 ```
 
 ### Configuration Options
@@ -155,7 +149,6 @@ date_format = "%Y-%m-%d %H:%M"
 [gemini]
 api_key = ""                  # Your Gemini API key
 default_model = "gemini-2.0-flash"
-default_workspace = ""        # Path to default workspace
 temperature = 0.7
 max_output_tokens = 8192
 
@@ -177,6 +170,7 @@ auto_backup = false
 ---
 
 ## Command Reference
+
 
 ### Global Commands
 
@@ -215,21 +209,12 @@ auto_backup = false
 
 ### Gemini Commands
 
-#### Workspace
-
-| Command | Description |
-|---------|-------------|
-| `asteria gemini workspace add --path /path --name NAME` | Register a workspace |
-| `asteria gemini workspace list` | List workspaces |
-| `asteria gemini workspace delete <ID>` | Delete a workspace |
-
 #### Project
 
 | Command | Description |
 |---------|-------------|
 | `asteria gemini project create NAME` | Create project (dirs auto-created) |
 | `asteria gemini project list` | List all projects |
-| `asteria gemini project list --workspace NAME` | Filter by workspace |
 | `asteria gemini project delete NAME` | Delete a project |
 
 #### Prompt
@@ -286,7 +271,7 @@ AsteriaCLI/
 │   │       ├── __init__.py
 │   │       ├── base.py          # Base, UUIDMixin, TimestampMixin
 │   │       ├── agy.py           # AgyConversation model
-│   │       └── gemini.py        # Workspace, Project, Prompt, Output
+│   │       └── gemini.py        # Project, Prompt, Output
 │   ├── modules/                 # Feature modules (plugin-like)
 │   │   ├── agy/
 │   │   │   ├── commands.py      # Typer CLI commands
@@ -332,19 +317,10 @@ agy_conversations
 ├── created_at     (DATETIME)
 └── updated_at     (DATETIME)
 
-gemini_workspaces
-├── id          (UUID PK)
-├── path        (TEXT, UNIQUE, indexed)
-├── name        (TEXT, indexed)
-├── description (TEXT)
-├── created_at  (DATETIME)
-└── updated_at  (DATETIME)
-
 gemini_projects
 ├── id           (UUID PK)
 ├── name         (TEXT, indexed)
 ├── description  (TEXT)
-├── workspace_id (FK → gemini_workspaces.id CASCADE)
 ├── created_at   (DATETIME)
 └── updated_at   (DATETIME)
 
@@ -368,6 +344,7 @@ gemini_outputs
 ```
 
 ---
+
 
 ## Extending with New Modules
 
